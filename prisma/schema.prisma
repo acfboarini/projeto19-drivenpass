@@ -75,11 +75,10 @@ model Card {
 model Wifi {
   id            Int     @id @default(autoincrement())
   user          User    @relation(fields: [userId], references: [id])
-  userId        Int
+  userId        Int     @unique
   title         String
   networkName   String
   password      String
 
-  @@unique([userId, title])
   @@map("wifis")
 }
