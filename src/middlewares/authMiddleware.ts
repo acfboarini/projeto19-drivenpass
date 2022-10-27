@@ -30,7 +30,6 @@ export async function validateSignInData(req: Request, res: Response, next: Next
     if (!user) return res.status(404).send("Usuario não existe para esse email");
 
     const passwordValidation = bcrypt.compareSync(password, user.password);
-    console.log(passwordValidation);
     if (passwordValidation) {
         res.locals.user = user;
         next();
