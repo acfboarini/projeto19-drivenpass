@@ -5,10 +5,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "build": "tsc src/server.ts",
+    "build": "tsc",
     "start": "node dist/server.js",
     "dev": "NODE_ENV=development npx nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/server.ts\"",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest -i"
   },
   "keywords": [],
   "author": "",
