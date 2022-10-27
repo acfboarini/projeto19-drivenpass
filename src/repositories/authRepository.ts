@@ -1,11 +1,5 @@
 import { prisma } from "../config/database.js";
-import { CreateSessionData, CreateUserData } from "../services/authService.js";
-
-async function insertUser(userData: CreateUserData) {
-    return await prisma.user.create({
-        data: userData
-    })
-}
+import { CreateSessionData } from "../services/authService.js";
 
 async function createSession(sessionData: CreateSessionData) {
     return await prisma.session.create({
@@ -22,7 +16,7 @@ async function singOut(token: string) {
 }
 
 export const authRepository = {
-    insertUser, createSession, singOut
+    createSession, singOut
 }
 
 export default authRepository;
