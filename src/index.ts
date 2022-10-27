@@ -7,7 +7,7 @@ app.use(cors());
 app.use(json());
 app.use(router);
 
-const port = process.env.PORT;
+const port = +process.env.PORT;
 app.listen(port, () => {
     console.log(`Server online on port ${port}`);
 })
