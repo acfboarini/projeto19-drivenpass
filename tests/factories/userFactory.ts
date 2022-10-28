@@ -1,11 +1,20 @@
-import supertest from "supertest";
-import app from "../../src/app.js";
+import bcrypt from "bcrypt";
+import { prisma } from "../../src/config/database.js";
+import { faker } from "@faker-js/faker";
 
 export async function createUser() {
-  const userData = {
-    email: "teste@gmail.com",
-    password: "1234"
+  const email = faker.internet.email();
+  const password = faker.internet.password();
+
+  const userCreated = await prisma.user.create({
+    data: {
+      email: email,
+      password: bcrypt.hashSync(password, 10)
+    }
+  });
+  return {
+    id: userCreated.id,
+    email, 
+    password
   };
-  await supertest(app).post("/signup").send(userData);
-  return userData;
 }
