@@ -1,26 +1,29 @@
 import { prisma } from "../config/database.js";
+import { CreateUserData } from "../services/authService.js";
 
-async function getUserByEmail(email: string) {
-    return await prisma.user.findUnique({
-        where: {
-            email
-        }
+async function insert(userData: CreateUserData) {
+    await prisma.user.create({
+        data: userData
     })
 }
 
-async function getUserByToken(token: string) {
+async function getByEmail(email: string) {
+    return await prisma.user.findUnique({
+        where: { email }
+    });
+}
+
+async function getByToken(token: string) {
     return await prisma.session.findUnique({
-        where: {
-            token
-        },
+        where: { token },
         select: {
             user: true
         }
-    })
+    });
 }
 
 const userRepository = {
-    getUserByEmail, getUserByToken 
+    insert, getByEmail, getByToken 
 }
 
 export default userRepository;
