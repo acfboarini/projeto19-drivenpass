@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from "../../src/app";
 import { prisma } from "../../src/config/database.js";
 import { clearDatabase } from "../factories/databaseScenarioFactory.js";
+import { createSession } from "../factories/sessionFactory";
 import { createUser } from "../factories/userFactory.js";
 
 const agent = supertest(app);
@@ -38,8 +39,8 @@ describe("testing signup...", () => {
   });
 
   it("shouldn't create user. conflict", async () => {
-    const user = await createUser();
-    const result = await agent.post("/signup").send(user);
+    const { email, password } = await createUser();
+    const result = await agent.post("/signup").send({ email, password});
     expect(result.statusCode).toEqual(409);
   });
 
@@ -54,26 +55,26 @@ describe("testing signup...", () => {
 describe("testing signin...", () => {
   beforeEach(async () => {
     await clearDatabase();
-    await createUser();
   });
 
   it("user should login", async () => {
-    const result = await agent.post("/signin").send({
-      email: "teste@gmail.com",
-      password: "1234"
-    });
+    const { email, password } = await createUser();
+    const result = await agent.post("/signin").send({ email, password });
     expect(result.statusCode).toEqual(201);
     expect(result.body).toHaveProperty("token");
     expect(result.body).toHaveProperty("userId");
   });
 
   it("should can't find user", async () => {
-    const result = await agent.post("/signin").send({ email: "teste@gmail.co", password: "1234" });
+    const { email, password } = await createUser();
+    const fakeEmail = "_" + email;
+    const result = await agent.post("/signin").send({ email: fakeEmail, password });
     expect(result.statusCode).toEqual(404);
   });
 
   it("shuldn't login because incorret password", async () => {
-    const result = await agent.post("/signin").send({ email: "teste@gmail.com", password: "123" });
+    const { email } = await createUser();
+    const result = await agent.post("/signin").send({ email, password: "senha_incorreta" });
     expect(result.statusCode).toEqual(401);
   });
 
@@ -100,16 +101,17 @@ describe("testing signin...", () => {
 /* -------------------- SIGN OUT  -----------------------*/ 
 
 describe("testing signout...", () => {
+  
   let token = "";
-
   beforeEach(async () => {
+    await clearDatabase();
     const user = await createUser();
-    const result = await agent.post("/signin").send(user);
-    token = result.body.token;
+    const result = await createSession(user);
+    token = result.token;
   });
 
   it ("should logout user", async () => {
-    const result = await agent.delete("/signout").set({authorization: token});
+  const result = await agent.delete("/signout").set({authorization: token});
     expect(result.statusCode).toEqual(200);
   });
 
